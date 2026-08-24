@@ -297,6 +297,9 @@
     <button id="collapse-toggle" title="طي/إظهار القائمة"><span class="arrow">◀</span></button>
     <div id="topbar">
       <h2 id="current-title">اختر أداة من القائمة</h2>
+      <div class="actions">
+        <button id="refresh-all-btn">🔄 تحديث كل اللينكات</button>
+      </div>
     </div>
     <div id="frame-wrap">
       <div id="placeholder">
@@ -380,6 +383,27 @@
   const collapseToggle = document.getElementById('collapse-toggle');
   collapseToggle.addEventListener('click', () => {
     sidebar.classList.toggle('collapsed');
+  });
+
+  const refreshAllBtn = document.getElementById('refresh-all-btn');
+  refreshAllBtn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    let opened = 0;
+    items.forEach((item, i) => {
+      setTimeout(() => {
+        const freshUrl = item.url + (item.url.includes('?') ? '&' : '?') + '_r=' + Date.now();
+        const win = window.open(freshUrl, '_blank', 'noopener');
+        if (win) opened++;
+        if (i === items.length - 1){
+          placeholderTitle.textContent = opened === items.length
+            ? 'تم تحديث كل اللينكات'
+            : 'تم تحديث بعض اللينكات فقط';
+          placeholderText.textContent = opened === items.length
+            ? `اتفتحت ${opened} أدوات في تابات جديدة بأحدث نسخة.`
+            : 'المتصفح منع فتح بعض التابات (Popup Blocker). اسمح بالنوافذ المنبثقة لهذا الموقع وحاول تاني.';
+        }
+      }, i * 250);
+    });
   });
 
   renderNav();
